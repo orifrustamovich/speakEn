@@ -40,7 +40,7 @@ def getDefinitions(word_id):
             # print(sense.get("definitions", []))
             # print(sense)
             # print(sense["definitions"][0])
-            definitions.append(f"{sense["definitions"][0]}")
+            definitions.append(f"{sense['definitions'][0]}")
         output["definitions"] = "\n".join(definitions)
         audio = entry["entries"][0]["pronunciations"][0]["audioFile"]
         output["audio"] = audio
