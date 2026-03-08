@@ -6,10 +6,10 @@ name = "pypi"
 [packages]
 aiogram = "*"
 requests = "*"
-googletrans = "*"
 python-dotenv = "*"
 async-timeout = "*"
 httpcore = {extras = ["asyncio"], version = "*"}
+deep-translator = "*"
 
 [dev-packages]
 

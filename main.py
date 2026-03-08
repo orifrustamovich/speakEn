@@ -13,9 +13,10 @@ from aiogram.types import Message
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
 from oxfordLookup import getDefinitions
-from googletrans import Translator
 
-translator = Translator()
+
+from deep_translator import GoogleTranslator
+
 load_dotenv()
 
 TOKEN = getenv("BOT_TOKEN")
@@ -39,18 +40,18 @@ async def command_help_handler(message: Message) -> None:
 
 @dp.message()
 async def google_translator(message: Message) -> None:
-    detected = await translator.detect(message.text)
-    lang = detected.lang
+    # Tilni aniqlash
+    detected = GoogleTranslator(source='auto', target='en').translate(message.text)
+
+    # Agar matn inglizcha bo'lsa, tarjima o'zgarmas bo'ladi
+    is_english = detected.lower() == message.text.lower()
+
     if len(message.text.split()) > 2:
-        dest = "uz" if lang == "en" else "en"
-        translated = await translator.translate(message.text, dest=dest)
-        await message.reply(translated.text)
+        dest = "uz" if is_english else "en"
+        translated = GoogleTranslator(source='auto', target=dest).translate(message.text)
+        await message.reply(translated)
     else:
-        if lang == "en":
-            word_id = message.text
-        else:
-            translated = await translator.translate(message.text, dest='en')
-            word_id = translated.text
+        word_id = detected if not is_english else message.text
         print(word_id)
         lookup = getDefinitions(word_id)
         if lookup:
@@ -59,7 +60,6 @@ async def google_translator(message: Message) -> None:
                 await message.reply_voice(lookup['audio'])
         else:
             await message.reply(f"{word_id} - bunday so'z topilmadi")
-
 
 async def on_startup(bot: Bot) -> None:
     await bot.set_webhook(WEBHOOK_URL)
